@@ -1,0 +1,459 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>עשר BITE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link href="StyleSheet.css" rel="stylesheet" />
+
+
+</head>
+
+
+<body onload="init()">
+
+    <div class="container-fluid">
+        <!-- כפתור חזרה לתחילת העמוד -->
+        <button onclick="topFunction()" id="topButton1" title="Go to top">
+            <img src="../banner/arrow-up.svg" />
+        </button>
+        <!--  -->
+
+
+
+
+        <div class="row header">
+            <div id="largeScreen" class="d-none d-md-block col-md-12">
+                <img class="imgHead" src="../banner/BITE.png" />
+            </div>
+            <!--<div id="mediumScreen" class="d-none d-md-block col-md-12 d-lg-none">
+                <img src="../banner/BITE.png" />
+            </div>-->
+            <div id="xsPhone" class="col-12 d-md-none">
+                <img class="imgHead" src="../banner/BITEsmall.png" />
+
+            </div>
+            <!--<div id="xxsPhone" class="col-12 d-sm-none">
+                <img src="../banner/BITEsmall.png" />
+            </div>-->
+            <!--btn-info btn-lg-->
+
+        </div>
+        
+        <div class="row">
+            <div class="col-11 col-md-7 col-lg-5" id="numsDiv">
+                <p id="numOfRest">נמצאו <span id="number">0</span> מסעדות שמתאימות לחיפוש</p>
+            </div>
+            <div class="col-1 col-md-5 col-lg-7">
+
+            </div>
+
+        </div>
+
+
+
+        <div class="row pageBody">
+            <div class="col-12 col-sm-5 col-md-4 col-lg-3">
+                <!-- right div - choosing restaurant -->
+                <div id="rightDiv">
+                    <div id="buttonsDiv" class="form-box">
+
+                        <h4>סוג מטבח</h4>
+
+                        <select class="custom-select" id="typeCuisin" name="1">
+                            <option value="no choise">לא משנה לי</option>
+                        </select>
+
+                        <div id="sitOrDeliver">
+                            <br />
+                            <h4>בחירה להזמנה</h4>
+
+                            <select name="sitOD" id="sitOD" class="custom-select">
+                                <option value="Has Table booking">ישיבה בסניף - Table booking</option>
+                                <option value="Has Online delivery">הזמנת משלוח - Online Delivery</option>
+                                <option value="no choise">לא משנה לי</option>
+                            </select>
+                            <br />
+
+                        </div>
+                        <div>
+                            <br />
+                            <h4>סינון לפי טווח מחירים</h4>
+                            <label for="from">מ:</label>
+                            <input type="text" pattern="[0-9]{1}" name="from" value="0" maxlength="1" id="from" class="text_box" />
+                            <label for="to">עד:</label>
+                            <input type="text" pattern="[0-9]{1}" name="to" value="5" maxlength="1" id="to" class="text_box" />
+
+                            <br /><br />
+
+                            <input type="button" name="name" value="סנן על פי הבחירה" class="btn btn-outline-info" onclick="sortByAll()" />
+
+                            <input type="button" value="בטל סינון" onclick="ShowAll()" class="btn btn-outline-info" />
+                            <!-- כפתור התנתקות -->
+                            <BR />
+                            <br />
+                            <input id="btnFavorite" type="button" value="הראה מועדפים" onclick="ShowAllFavorite(this)" class="btn btn-outline-danger" />
+
+
+                            <br />
+                            <br />
+                            <a href="signIn.html" id="logOutBtn" class="btn">
+                                <img id="logImg" src="../banner/logout.svg" />   יציאה
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- left div - restaurants cards -->
+            <div id="leftDiv" class="col-12 col-sm-7 col-md-8 col-lg-9">
+
+                <div id="resta" class="row"></div>
+
+
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+
+
+    <!-- scripts -->
+    <script src="back2Top.js"></script>
+
+    <script src="Restaurants1.js"></script>
+
+    <script>
+        onFavorite = false;
+
+        function init() {
+
+            if (localStorage["bgroup41"] != undefined) {
+                bgroup41 = JSON.parse(localStorage["bgroup41"]);
+                currentId = bgroup41["currentUser"];
+
+            }
+
+            ShowAll();
+            
+
+            catgories = [];
+
+            // מכניס למערך קטגוריות
+            for (k in Restaurants) {
+
+                x = Restaurants[k].Cuisines.split(", ")
+                for (var i = 0; i < x.length; i++) {
+                    catgories.push(x[i]);
+                }
+            }
+            //מוריד כפיליות
+            for (var i = 0; i < catgories.length; i++) {
+
+                for (var j = i + 1; j < catgories.length; j++) {
+                    if (catgories[i] == catgories[j]) {
+                        catgories.splice(j--, 1);
+
+                    }
+                }
+            }
+            // מוסיף לרשימה
+            for (k in catgories) {
+
+                document.getElementById("typeCuisin").innerHTML += ` <option value="${catgories[k]}">${catgories[k]}</option>`
+            }
+
+
+
+        }
+
+        //אתחול תצוגת המסעדות
+        //פונקציה 2
+        function ShowAll() {
+
+            count = 0;
+            document.getElementById("resta").innerHTML = "";
+            for (k in Restaurants) {
+
+                cardShow(k);
+                count++;
+
+            }
+            document.getElementById("number").innerHTML = count;
+            onFavorite = false;
+            Startfunctions();
+            $('#btnFavorite').attr("value", "הראה מועדפים");
+
+        }
+
+
+        //פונקציות 3 לכפתור המפות
+        function Change2White() {
+            
+            $(this).children(".mapIcon").css("color", "white")
+        }
+        function Change2Green() {
+            
+            $(this).children(".mapIcon").css("color", "#28a745")
+        }
+
+
+        //הצגת הכרטיסיות המועפות פונקציה 4
+        function ShowAllFavorite(button) {
+
+            if ($(button).val() == "חזרה לתצוגת מסעדות") {
+
+                ShowAll();
+             
+            }
+            else {
+               
+                let count = 0;
+                document.getElementById("resta").innerHTML = "";
+
+
+                for (k in bgroup41.users[currentId].favorite) {
+                    if (bgroup41.users[currentId].favorite[k] != null) {
+                        cardShow(k);
+                        count++;
+                    }
+
+                }
+
+                document.getElementById("number").innerHTML = count;
+                Startfunctions();
+
+                onFavorite = true;
+                $(button).attr("value", "חזרה לתצוגת מסעדות");
+            }
+
+        }
+
+        //פונקציה 5 שמירה למועדפים
+
+        function AddToFavorits() {
+
+            k = $(this).attr("id");
+
+            if ($(this).val() == "שמור למועדפים") {
+
+                if (bgroup41.users[currentId].favorite[k] == undefined) {
+                    $(this).attr("value", "הסר ממועדפים")
+                    bgroup41.users[currentId].favorite[k] = k;
+
+                }
+
+            }
+            else {
+
+                delete bgroup41.users[currentId].favorite[k];
+                $(this).attr("value", "שמור למועדפים");
+                if (onFavorite == true) {
+                    ShowAllFavorite();
+                }
+            }
+            localStorage["bgroup41"] = JSON.stringify(bgroup41);
+
+        }
+
+
+        //פונקציה 6
+        function sortByAll() {
+
+            from = document.getElementById("from").value;
+            to = document.getElementById("to").value;
+
+
+            //בדיקה שהמשתמש הכניס מספרים לסינון
+            if (!(from <= 9 && from >= 0 && to <= 9 && from >= 0)) {
+                alert("הוכנס מספר שגוי! נא להכניס מספר בטווח בין 0 ל-9");
+
+                return;
+
+            }
+
+            if (from == "" || to == "") {
+                alert("שימו לב! הוזן ערך ריק. נא להכניס מספר בטווח בין 0 ל-9")
+                return;
+            }
+
+            document.getElementById("resta").innerHTML = "";
+            count = 0;
+
+
+
+            var selectType = document.getElementById('typeCuisin');
+            myType = selectType.options[selectType.selectedIndex].value;
+            var selectSod = document.getElementById('sitOD');
+            sod = selectSod.options[selectSod.selectedIndex].value;
+
+
+
+            for (k in Restaurants) {
+
+                if (from <= Restaurants[k]["Price range"] && Restaurants[k]["Price range"] <= to) {
+                    check = Restaurants[k].Cuisines.split(", ");
+                    for (var i = 0; i < check.length; i++) {
+
+                        if ((Restaurants[k][sod] == "Yes" && check[i] == myType)) {
+                            cardShow(k);
+                            count++;
+                            break;
+                        }
+
+                        //מצב שבו לא משנה אם ישיבה בסניף או משלוח
+                        else if (sod == "no choise" && check[i] == myType) {
+
+                            cardShow(k);
+                            count++;
+                            break;
+
+                        }
+                        else if (Restaurants[k][sod] == "Yes" && myType == "no choise") {
+                            cardShow(k);
+                            count++;
+                            break;
+                        }
+
+                        else if (sod == "no choise" && myType == "no choise") {
+                            cardShow(k);
+                            count++; break;
+
+
+                        }
+
+                    }
+
+
+                }
+
+
+            }
+            document.getElementById("number").innerHTML = count;
+            $('#btnFavorite').attr("value", "הראה מועדפים");
+            onFavorite = false;
+            Startfunctions();
+        }
+        //פונקציה 7
+        function Startfunctions() {
+            $(".Add2F").on("click", AddToFavorits);
+            $(".mapBTN").mouseover(Change2White);
+            $(".mapBTN").mouseout(Change2Green);
+        }
+        //פונקציה 8
+        function cardShow(k) {
+
+            if (bgroup41.users[currentId].favorite[k] != undefined) {
+                valType = "הסר ממועדפים"
+            }
+            else {
+                valType = "שמור למועדפים"
+
+            }
+            max = 15; min = 1;
+            let picNum = Math.floor(Math.random() * (max - min + 1)) + min;
+            str = `    <div class="cards1 col-12  col-md-6 col-xl-4 d-flex">
+                                                <div class="card form-box">
+                                                <img class="card-img-top " src="../photos/${picNum}.jpg" alt="Card image">
+                                                 <div class="card-body">
+                                                <h4 class="card-title">${Restaurants[k]["Restaurant Name"]}</h4>
+                                                 <p class="card-text">
+                                                   Adress:  ${Restaurants[k]["Address"]}   </p>
+                                                   <p class="card-text">
+                                                  <span class="span1"> ${Restaurants[k].Cuisines}</span>
+                                                      </p>
+                                                 <p class="card-text">
+                                                 Has Table booking: ${Restaurants[k]["Has Table booking"]}
+                                                <br />
+                                               Has Online delivery: ${Restaurants[k]["Has Online delivery"]}
+                                                <br />
+                                                Rating: ${Restaurants[k]["Aggregate rating"]}
+                                                (${Restaurants[k]["Rating text"]})
+                                                 <br />
+                                              Average Cost for two: ${Restaurants[k]["Average Cost for two"]}
+                                              <br />
+                                                Price Range: ${Restaurants[k]["Price range"]}
+                                                <br />
+                                               Number of votes: ${Restaurants[k]["Votes"]}
+                                               </p>
+                                               <input id="${k}"  type="button" value="${valType}" class="btn btn-outline-danger Add2F" />
+                                                <a href="https://www.google.com/maps?q=${Restaurants[k]["Latitude"]},${Restaurants[k]["Longitude"]}">
+                                                        <button class="mapBTN btn btn-outline-success"><i class="mapIcon fa fa-map-marker"></i></button>
+                                                      </a>
+                                                      </div>
+                                                       </div>
+                                                       `
+            document.getElementById("resta").innerHTML += str;
+        }
+
+             // ניסיונות נוספים שניסנו ועבדו, שומרות כדי שיהיה לנו למבחן
+
+                                                                                //// סוג
+                                                                                //function f1(x) {
+                                                                                //    document.getElementById("resta").innerHTML = "";
+                                                                                //    for (k in Restaurants) {
+                                                                                //        check = Restaurants[k].Cuisines.split(", ");
+                                                                                //        for (var i = 0; i < check.length; i++) {
+                                                                                //            if (check[i] == x) {
+                                                                                //                cardShow(k)
+                                                                                //            }
+                                                                                //        }
+
+                                                                                //    }
+                                                                                //}
+                                                                                ////טקסט
+                                                                                //function f2() {
+                                                                                //    document.getElementById("resta").innerHTML = "";
+                                                                                //    from = document.getElementById("from").value;
+                                                                                //    to = document.getElementById("to").value;
+                                                                                //    for (k in Restaurants) {
+                                                                                //        if (from <= Restaurants[k]["Price range"] && Restaurants[k]["Price range"] <= to) {
+                                                                                //            cardShow(k)
+                                                                                //        }
+                                                                                //    }
+                                                                                //}
+                                                                                ////סלידרים
+                                                                                //function f2_2() {
+                                                                                //    document.getElementById("resta").innerHTML = "";
+                                                                                //    from = document.getElementById("myRangefrom").value;
+                                                                                //    to = document.getElementById("myRangeto").value;
+                                                                                //    for (k in Restaurants) {
+                                                                                //        if (from <= Restaurants[k]["Price range"] && Restaurants[k]["Price range"] <= to) {
+                                                                                //            cardShow(k)
+                                                                                //        }
+                                                                                //    }
+                                                                                //}
+
+                                                                                //function f3(x) {
+                                                                                //    document.getElementById("resta").innerHTML = "";
+
+                                                                                //    for (k in Restaurants) {
+                                                                                //        if (Restaurants[k][x] == "Yes") {
+                                                                                //            cardShow(k)
+                                                                                //        }
+                                                                                //    }
+
+                                                                                //}
+    </script>
+
+</body>
+</html>

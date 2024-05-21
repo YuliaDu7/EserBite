@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>eserBite - Sign Up</title>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        function init() {
+            if (localStorage["bgroup41"] != undefined) {
+                bgroup41 = JSON.parse(localStorage["bgroup41"]);
+
+            }
+
+            else {
+                bgroup41 = {
+                    users: {},
+                    currentUser: null
+                }
+            }
+
+
+        }
+
+        function Register() {
+            // קבלת נתונים
+            let id = document.getElementById("id").value;
+            let password = document.getElementById("password").value;
+            let passConfirm = document.getElementById("pass2").value;
+
+
+            if (password != passConfirm) {
+                alert('"Password" and "Confirm password" does not match. Please try again')
+                return;
+            }
+            if (id == "" && password == "") {
+                alert('One field or more is empty!')
+                return;
+            }
+
+
+
+            let user = {
+                id: id,
+                password: password,
+                favorite: {}
+            }
+
+            if (bgroup41.users[id] == undefined) {
+                bgroup41.users[id] = user;
+
+            }
+
+            else {
+                alert("Already registered");
+                return;
+            }
+
+
+
+            localStorage["bgroup41"] = JSON.stringify(bgroup41);
+            alert("You have successfully registered. You may now log in.");
+            window.location = "signIn.html";
+        }
+
+
+        function showPassword(valueId) {
+            var x = document.getElementById(valueId);
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        }
+
+
+
+
+
+
+    </script>
+
+    <link href="SignUp.css" rel="stylesheet" />
+</head>
+<body onload="init()">
+    <section>
+        <div class="form-box">
+            <div class="form-value">
+
+                <h2>Sign Up</h2>
+                <div class="inputbox">
+                    <ion-icon name=""></ion-icon>
+                    <input id="id" type="tel" required>
+                    <label for="">User ID</label>
+                </div>
+
+
+                <div class="inputbox">
+                    <ion-icon class="eye" onclick="showPassword('password')" name="eye-outline"></ion-icon>
+                    <input id="password" type="password" required>
+                    <label for="">Enter password</label>
+                </div>
+                <div class="inputbox">
+                    <ion-icon class="eye" onclick="showPassword('pass2')" name="eye-outline"></ion-icon>
+                    <input id="pass2" type="password" required>
+                    <label for="">Confirm password</label>
+                </div>
+
+                <button onclick="Register()">Sign Up</button>
+                <div class="register">
+                    <p>Already have an account? <a href="signIn.html">Sign In</a></p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+</html>
